@@ -3,54 +3,71 @@ package movement;
 import core.Coord;
 import core.Settings;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Generated Thomas Cluster Process Model.
+ * Generated clustered spawns using Thomas Cluster Point Process Model.
  *
- * @author jordan
+ * @author Jordan, Narwa
  */
 public class StationaryClustered extends StationaryNodes {
-	/** Number of cluster */
-	public static final String	NROF_CLUSTER = "nrofCluster";
+	/**
+	 * Number of cluster
+	 */
+	public static final String CLUSTERPOI_NS = "cluster";
 
-	/** Controls how heavy the distribution tail is */
-	public static final String ALPHA = "alpha";
+	/**
+	 * Controls how heavy the distribution tail is
+	 */
+	public static final String ALPHA_NS = "alpha";
 	public static final double DEFAULT_ALPHA = 0.5;
 
-	public static final String XM = "xm";
-	public static final double DEFAULT_XM = 1;
+	/**
+	 * Controls the scaling of the pareto
+	 */
+	public static final String XM_NS = "xm";
+	public static final double DEFAULT_XM = 1.0;
 
-	private double xm, alpha;
-	public static int nrofCluster;
-	public static Set<Coord> parentCoord;
+	/**
+	 * Controls the spread of the clusters, smaller is denser
+	 */
+	public static final String SIGMA_NS = "sigma";
+	public static final double[] DEFAULT_SIGMA = new double[]{3.0, 3.0};
+
+	protected static int nrofCluster;
+	protected static List<Coord> POICoords;
+
+	private final double xm;
+	private final double alpha;
+	private final double[] sigma;
 	private Coord location;
 
 	public StationaryClustered(Settings s) {
 		super(s);
 
-		if (s.contains(NROF_CLUSTER)) {
-			this.nrofCluster = s.getInt(NROF_CLUSTER);
-		} else {
-			this.nrofCluster = 5;
-		}
-		this.alpha = s.contains(ALPHA) ? s.getDouble(ALPHA) : DEFAULT_ALPHA;
-		this.xm = s.contains(XM) ? s.getDouble(XM) : DEFAULT_XM;
+		if (s.contains(CLUSTERPOI_NS)) {
+			int[] clusterRange = s.getCsvInts(CLUSTERPOI_NS); // Group2.cluster = 10, 10
+			nrofCluster = Math.min(
+				clusterRange[1],
+				(int) Math.ceil(rng.nextDouble(clusterRange[0], clusterRange[1] + 1)));
+		} else nrofCluster = 3;
 
-		this.parentCoord = new HashSet<Coord>();
+		this.alpha = s.contains(ALPHA_NS) ? s.getDouble(ALPHA_NS) : DEFAULT_ALPHA;
+		this.xm = s.contains(XM_NS) ? s.getDouble(XM_NS) : DEFAULT_XM;
+
+		if (s.contains(SIGMA_NS)) {
+			sigma = s.getCsvDoubles(SIGMA_NS);
+		} else sigma = DEFAULT_SIGMA;
+
+		POICoords = new ArrayList<>();
 	}
 
-	public StationaryClustered(StationaryClustered sp) {
-		super(sp);
-		this.location = sp.location;
-		this.alpha = sp.alpha;
-		this.xm = sp.xm;
-
-		//apakah butuh
-		this.parentCoord = sp.parentCoord;
+	public StationaryClustered(StationaryClustered sc) {
+		super(sc);
+		this.location = sc.location;
+		this.alpha = sc.alpha;
+		this.xm = sc.xm;
+		this.sigma = sc.sigma;
 	}
 
 	/**
@@ -60,27 +77,38 @@ public class StationaryClustered extends StationaryNodes {
 	 */
 	@Override
 	public Coord getInitialLocation() {
-		if (this.parentCoord.isEmpty()) {
+		if (POICoords.isEmpty()) {
 			this.generateParentCoord();
 		}
 
-		List<Coord> parentCoordList = new ArrayList<Coord>(this.parentCoord);
-		Coord parent = parentCoordList.get(pareto());
+		Coord currentPOI = POICoords.get((int) ((pareto() * 100) % POICoords.size()));
+		System.out.println("POI = " + currentPOI);
 
 		double x;
 		double y;
 		do {
-			/* Adjusting standard deviation scaling factor */
-			/* (Assuming 99.7% data within [-3*std, 3*std], empirical rule) */
-			double stdDevFactorX = getMaxX() / 3.0;
-			double stdDevFactorY = getMaxY() / 3.0;
+			double randomizedSigma = rng.nextDouble(sigma[0], sigma[1] + 1);
+			double distance = rayleighDistance(randomizedSigma);
 
-			x = rng.nextGaussian() * stdDevFactorX + getMaxX() / 2.0;
-			y = rng.nextGaussian() * stdDevFactorY + getMaxY() / 2.0;
+			/* Calculating a random direction (circle) */
+			double theta = rng.nextDouble() * 2 * Math.PI;
+
+			/* Calculate the next X and Y according to the direction from the POI */
+			x = currentPOI.getX() + distance * Math.cos(theta);
+			y = currentPOI.getY() + distance * Math.sin(theta);
 
 		} while (x > getMaxX() || y > getMaxY() || x < 0 || y < 0);
 		return new Coord(x, y);
 	}
+
+	/**
+	 * Rayleigh Distribution, used to model natural distance from a centerpoint.
+	 */
+	private double rayleighDistance(double sigma) {
+		double u = rng.nextDouble();
+		return sigma * Math.sqrt(-2 * Math.log(1 - u));
+	}
+
 
 	@Override
 	public StationaryClustered replicate() {
@@ -89,17 +117,20 @@ public class StationaryClustered extends StationaryNodes {
 
 	private void generateParentCoord() {
 		for (int i = 0; i < nrofCluster; i++) {
-			this.parentCoord.add(randomCoord());
+			POICoords.add(randomCoord());
 		}
+
+		System.out.println("Number of POI: " + POICoords.size());
 	}
 
 	protected Coord randomCoord() {
 		return new Coord(rng.nextDouble() * getMaxX(),
-				rng.nextDouble() * getMaxY());
+			rng.nextDouble() * getMaxY());
 	}
 
 	/**
 	 * Calculates a step length based on the Pareto distribution.
+	 *
 	 * @return A value representing the step length
 	 */
 	public double pareto() {
