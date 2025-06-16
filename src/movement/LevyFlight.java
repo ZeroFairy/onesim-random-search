@@ -4,15 +4,18 @@ import core.Coord;
 import core.Settings;
 
 /**
- * Create path that were according to a human movement.
- * Where there are more short length path, then long length path.
+ * Generates movement paths according to human-like behavior,
+ * where short steps are more frequent than long ones (Lévy Flight pattern).
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/L%C3%A9vy_flight">Lévy flight</a>
+ * @see <a href="https://ieeexplore.ieee.org/document/5750071">On the Levy-Walk Nature of Human Mobility</a>
  */
 public class LevyFlight extends MovementModel {
-	/** how many waypoints should there be per path */
+	/** Number of waypoints per path */
 	private static final int PATH_LENGTH = 1;
 	private Coord lastWaypoint;
 
-	/** how heavy are the tail gonna be */
+	/** Controls how heavy the distribution tail is */
 	public static final String ALPHA = "alpha";
 	public static final double DEFAULT_ALPHA = 2.5;
 
@@ -21,20 +24,10 @@ public class LevyFlight extends MovementModel {
 
 	private double xm, alpha;
 
-
 	public LevyFlight(Settings settings) {
 		super(settings);
-		if (settings.contains(ALPHA)) {
-			this.alpha = settings.getDouble(ALPHA);
-		} else {
-			this.alpha = DEFAULT_ALPHA;
-		}
-
-		if (settings.contains(XM)) {
-			this.xm = settings.getDouble(XM);
-		} else {
-			this.xm = DEFAULT_XM;
-		};
+		this.alpha = settings.contains(ALPHA) ? settings.getDouble(ALPHA) : DEFAULT_ALPHA;
+		this.xm = settings.contains(XM) ? settings.getDouble(XM) : DEFAULT_XM;
 	}
 
 	protected LevyFlight(LevyFlight rwp) {
@@ -42,46 +35,53 @@ public class LevyFlight extends MovementModel {
 		this.xm = rwp.xm;
 		this.alpha = rwp.alpha;
 	}
-	
+
 	/**
-	 * Returns a possible (random) placement for a host
+	 * Returns a random initial location for a host on the map.
 	 * @return Random position on the map
 	 */
 	@Override
 	public Coord getInitialLocation() {
 		assert rng != null : "MovementModel not initialized!";
 		Coord c = randomCoord();
-
 		this.lastWaypoint = c;
 		return c;
 	}
-	
+
 	@Override
 	public Path getPath() {
 		Path p = new Path(generateSpeed());
 		p.addWaypoint(lastWaypoint.clone());
-		Coord c = lastWaypoint;
 
-		c = levyWalk();
+		Coord c = levyFlight();
 		System.out.println(c);
 		p.addWaypoint(c);
-		
+
 		this.lastWaypoint = c;
 		return p;
 	}
-	
+
 	@Override
 	public LevyFlight replicate() {
 		return new LevyFlight(this);
 	}
 
+	/**
+	 * Generates a random coordinate within the bounds of the map.
+	 */
 	protected Coord randomCoord() {
-		return new Coord(rng.nextDouble() * getMaxX(),
-				rng.nextDouble() * getMaxY());
+		return new Coord(
+				rng.nextDouble() * getMaxX(),
+				rng.nextDouble() * getMaxY()
+		);
 	}
 
-	protected Coord levyWalk() {
-		double next_X = 0, next_Y = 0;
+	/**
+	 * Performs a Lévy Flight step to determine the next coordinate.
+	 */
+	protected Coord levyFlight() {
+		double next_X, next_Y;
+
 		do {
 			double step_length = pareto();
 			double theta = rng.nextDouble(0, 2 * Math.PI);
@@ -89,7 +89,7 @@ public class LevyFlight extends MovementModel {
 			next_X = lastWaypoint.getX() + step_length * Math.cos(theta);
 			next_Y = lastWaypoint.getY() + step_length * Math.sin(theta);
 
-			System.out.println("X" + next_X + " Y" + next_Y);
+			System.out.println("X: " + next_X + " Y: " + next_Y);
 
 		} while (next_X >= getMaxX() || next_Y >= getMaxY() || next_X <= 0 || next_Y <= 0);
 
@@ -97,10 +97,11 @@ public class LevyFlight extends MovementModel {
 	}
 
 	/**
-	 * Metode for calculate the pareto number
+	 * Calculates a step length based on the Pareto distribution.
+	 * @return A value representing the step length
 	 */
 	public double pareto() {
-		double u = 1 - rng.nextDouble();
-		return (this.xm / Math.pow(u, (1 / this.alpha)));
+		double u = 1 - rng.nextDouble(); // Ensures u is in (0, 1]
+		return this.xm / Math.pow(u, 1 / this.alpha);
 	}
 }
