@@ -8,11 +8,11 @@ import java.util.*;
 /**
  * Generated clustered spawns using Thomas Cluster Point Process Model.
  *
- * @author Jordan, Narwa
+ * @author Jordan, Nara
  */
 public class StationaryClustered extends StationaryNodes {
 	/**
-	 * Number of cluster
+	 * Number of clusters
 	 */
 	public static final String CLUSTERPOI_NS = "cluster";
 
@@ -81,12 +81,13 @@ public class StationaryClustered extends StationaryNodes {
 			this.generateParentCoord();
 		}
 
+		/* Selects POI coordinate (centroid) using pareto */
 		Coord currentPOI = POICoords.get((int) ((pareto() * 100) % POICoords.size()));
-		System.out.println("POI = " + currentPOI);
 
 		double x;
 		double y;
 		do {
+			/* We pick a random value from a defined sigma */
 			double randomizedSigma = rng.nextDouble(sigma[0], sigma[1] + 1);
 			double distance = rayleighDistance(randomizedSigma);
 
