@@ -17,7 +17,7 @@ public class LevyFlight extends MovementModel {
 
 	/** Controls how heavy the distribution tail is */
 	public static final String ALPHA = "alpha";
-	public static final double DEFAULT_ALPHA = 2.5;
+	public static final double DEFAULT_ALPHA = 0.5;
 
 	public static final String XM = "xm";
 	public static final double DEFAULT_XM = 1;
@@ -54,7 +54,6 @@ public class LevyFlight extends MovementModel {
 		p.addWaypoint(lastWaypoint.clone());
 
 		Coord c = levyFlight();
-		System.out.println(c);
 		p.addWaypoint(c);
 
 		this.lastWaypoint = c;
@@ -88,8 +87,6 @@ public class LevyFlight extends MovementModel {
 
 			next_X = lastWaypoint.getX() + step_length * Math.cos(theta);
 			next_Y = lastWaypoint.getY() + step_length * Math.sin(theta);
-
-			System.out.println("X: " + next_X + " Y: " + next_Y);
 
 		} while (next_X >= getMaxX() || next_Y >= getMaxY() || next_X <= 0 || next_Y <= 0);
 
