@@ -4,7 +4,7 @@ import core.Coord;
 import core.Settings;
 
 /**
- * Generated random stationary movement.
+ * Generated random stationary movement. (Maybe semi-Poisson, Poisson enough?)
  *
  * @author narwa
  */
