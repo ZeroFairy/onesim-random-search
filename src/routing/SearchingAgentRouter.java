@@ -5,44 +5,91 @@
  */
 package routing;
 
-import core.Connection;
-import core.DTNHost;
-import core.Message;
-import core.Settings;
+import core.*;
+import movement.MovementModel;
 
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
+ * Router class for searching agents where it searches a nodes with specific parameters.
  *
- * @author
+ * @author Jordan, Nara
  */
-public class SearchingAgentRouter implements RoutingDecisionEngine{
-
+public class SearchingAgentRouter implements RoutingDecisionEngine {
     /**
-     * For Report purpose, maybe needed some variable
+     * The movement model class name of the target nodes.
      */
-    protected LinkedList<Double> resourcesList;
-    public static final String TOTAL_CONTACT_INTERVAL = "perTotalContact";
-    public static final int DEFAULT_CONTACT_INTERVAL = 300;
-    private Double lastRecord = Double.MIN_VALUE;
-    private int interval;
+    public static String TARGET_MOVEMENT_S = "targetMovement";
+    /**
+     * The address prefix of the target nodes.
+     */
+    public static String TARGET_PREFIX_S = "targetPrefix";
+    /**
+     * The movement model class name of the target nodes.
+     */
+    public static String TARGET_ROUTER_S = "targetRouter";
+
+    protected static Set<DTNHost> encounteredSearchables;
+//    private Class<?> targetRouter;
+    private static MovementModel targetMovement;
+    private static String targetPrefix;
 
     public SearchingAgentRouter(Settings s) {
-        if (s.contains(TOTAL_CONTACT_INTERVAL)) {
-            interval = s.getInt(TOTAL_CONTACT_INTERVAL);
+        s.setNameSpace("SearchingAgentRouter");
+//        if (s.contains(TARGET_ROUTER_S)) {
+//            try {
+//                targetRouter = Class.forName(TARGET_ROUTER_S);
+//            } catch (ClassNotFoundException ex) {
+//                throw new SettingsError("router lu salah gblk");
+//            }
+//        } else {
+//            targetRouter = null;
+//        }
+        if (s.contains(TARGET_MOVEMENT_S)) {
+            targetMovement = (MovementModel) s.createIntializedObject("movement." + s.getSetting(TARGET_MOVEMENT_S));
         } else {
-            interval = DEFAULT_CONTACT_INTERVAL;
+            targetMovement = null;
+        }
+        if (s.contains(TARGET_PREFIX_S)) {
+            targetPrefix = s.getSetting(TARGET_PREFIX_S);
+        } else {
+            targetPrefix = "S";
+        }
+
+        if (encounteredSearchables == null) {
+            encounteredSearchables = new HashSet<>();
         }
     }
 
-    public SearchingAgentRouter(SearchingAgentRouter proto) {
-        resourcesList = new LinkedList<>();
-        interval = proto.interval;
-        lastRecord = proto.lastRecord;
+    public SearchingAgentRouter(SearchingAgentRouter sar) {
+        super();
+//        this.targetRouter = sar.targetRouter;
+        this.targetMovement = sar.targetMovement;
+        this.targetPrefix = sar.targetPrefix;
     }
 
+    /**
+     * Determines whether the peer is the target nodes to be searched,
+     * then inserts it into {@link #encounteredSearchables}.
+     * */
     @Override
     public void connectionUp(DTNHost thisHost, DTNHost peer) {
+        if (peer.getRouter() == thisHost.getRouter()) {
+            return;
+        }
+        if (targetMovement != null && targetMovement.getClass().isInstance(peer.getMovement())) {
+            System.out.println("FOUND HOST MOV: " + peer.getName());
+            encounteredSearchables.add(peer);
+        }
+//        else if (targetRouter != null && targetRouter.isInstance(peer.getRouter())) {
+//            System.out.println("FOUND HOST: " + peer.getAddress());
+//            encounteredSearchables.add(peer);
+//        }
+        else if (peer.getName().startsWith(targetPrefix)) {
+            System.out.println("FOUND HOST PRE: " + peer.getName());
+            encounteredSearchables.add(peer);
+        }
     }
 
     @Override
@@ -92,4 +139,16 @@ public class SearchingAgentRouter implements RoutingDecisionEngine{
     public void update(DTNHost thisHost) {
     }
 
+    /**
+     * Checks whether a host router is of the same class as target
+     * */
+    public static boolean isTargetRouter(DTNHost host, String targetRouter) {
+        MessageRouter hostRouter = host.getRouter();
+        try {
+            Class<?> targetClass = Class.forName(targetRouter);
+            return targetClass.isAssignableFrom(hostRouter.getClass());
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
 }
