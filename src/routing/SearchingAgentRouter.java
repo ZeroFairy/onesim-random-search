@@ -7,16 +7,16 @@ package routing;
 
 import core.*;
 import movement.MovementModel;
+import report.SearchingAgentReporting;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Router class for searching agents where it searches a nodes with specific parameters.
  *
  * @author Jordan, Nara
  */
-public class SearchingAgentRouter implements RoutingDecisionEngine {
+public class SearchingAgentRouter implements RoutingDecisionEngine, SearchingAgentReporting {
     /**
      * The movement model class name of the target nodes.
      */
@@ -30,8 +30,12 @@ public class SearchingAgentRouter implements RoutingDecisionEngine {
      */
     public static String TARGET_ROUTER_S = "targetRouter";
 
+    public static String searchingAgentPrefix = "A";
+
     protected static Set<DTNHost> encounteredSearchables;
-//    private Class<?> targetRouter;
+    private static double initialDiscovery;
+
+//    private MessageRouter targetRouter;
     private static MovementModel targetMovement;
     private static String targetPrefix;
 
@@ -64,9 +68,6 @@ public class SearchingAgentRouter implements RoutingDecisionEngine {
 
     public SearchingAgentRouter(SearchingAgentRouter sar) {
         super();
-//        this.targetRouter = sar.targetRouter;
-        this.targetMovement = sar.targetMovement;
-        this.targetPrefix = sar.targetPrefix;
     }
 
     /**
@@ -75,19 +76,29 @@ public class SearchingAgentRouter implements RoutingDecisionEngine {
      * */
     @Override
     public void connectionUp(DTNHost thisHost, DTNHost peer) {
-        if (peer.getRouter() == thisHost.getRouter()) {
+        /* Ignore same routers / of same group */
+        if (peer.getGroupId().startsWith(searchingAgentPrefix) || peer.getGroupId().equals(thisHost.getGroupId()) || peer.getRouter() == thisHost.getRouter()) {
             return;
         }
         if (targetMovement != null && targetMovement.getClass().isInstance(peer.getMovement())) {
             System.out.println("FOUND HOST MOV: " + peer.getName());
+            if (initialDiscovery == 0) {
+                initialDiscovery = SimClock.getTime();
+            }
             encounteredSearchables.add(peer);
         }
 //        else if (targetRouter != null && targetRouter.isInstance(peer.getRouter())) {
 //            System.out.println("FOUND HOST: " + peer.getAddress());
+//            if (initialDiscovery == 0) {
+//                initialDiscovery = SimClock.getTime();
+//            }
 //            encounteredSearchables.add(peer);
 //        }
         else if (peer.getName().startsWith(targetPrefix)) {
             System.out.println("FOUND HOST PRE: " + peer.getName());
+            if (initialDiscovery == 0) {
+                initialDiscovery = SimClock.getTime();
+            }
             encounteredSearchables.add(peer);
         }
     }
@@ -150,5 +161,22 @@ public class SearchingAgentRouter implements RoutingDecisionEngine {
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    /* SearchingAgentReporting implementations */
+
+    @Override
+    public double getInitialDiscovery() {
+        return initialDiscovery;
+    }
+
+    @Override
+    public Collection<DTNHost> getDiscoveredNodes() {
+        return encounteredSearchables;
+    }
+
+    @Override
+    public String getTargetPrefix() {
+        return targetPrefix;
     }
 }
