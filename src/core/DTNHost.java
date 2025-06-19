@@ -30,11 +30,11 @@ public class DTNHost implements Comparable<DTNHost> {
     private Coord destination;	// where is it going
 
     private MessageRouter router;
-    private MovementModel movement;
+    @Getter private MovementModel movement;
     private Path path;
     private double speed;
     private double nextTimeToMove;
-    private String name;
+    @Getter private String name;
     private int[] color;
     private List<MessageListener> msgListeners;
     private List<MovementListener> movListeners;
