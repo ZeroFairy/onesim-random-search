@@ -27,6 +27,7 @@ if NOT EXIST "%libdir%" (
 ) else (
     for %%f in (%libdir%\*.jar) do (
         if defined CLASSPATH (
+            echo [INFO] Adding '%%f' to classpath.
             set "CLASSPATH=!CLASSPATH!;%%f"
         ) else (
             set "CLASSPATH=%%f"

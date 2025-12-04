@@ -255,12 +255,12 @@ public abstract class MovementModel {
 	 */
 	public static void reset() {
 		Settings s = new Settings(MOVEMENT_MODEL_NS);
-		if (s.contains(RNG_SEED)) {
+		if (s.contains(RNG_SEED) && s.getInt(RNG_SEED) != 0) {
 			int seed = s.getInt(RNG_SEED);
 			rng = new Random(seed);
 		}
 		else {
-			rng = new Random(0);
+			rng = new Random();
 		}
 	}
 	

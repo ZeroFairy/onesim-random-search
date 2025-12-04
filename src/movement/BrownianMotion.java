@@ -65,8 +65,8 @@ public class BrownianMotion extends MovementModel {
 		final Path path = new Path(generateSpeed());
 		path.addWaypoint(location.clone());
 
-		Coord nextLocation = getNextBrownian();
-//		Coord nextLocation = getNextBrownianDirect(); // IDK the significant difference
+//		Coord nextLocation = getNextBrownian();
+		Coord nextLocation = getNextBrownianDirect(); // IDK the significant difference
 
 		path.addWaypoint(nextLocation);
 		location = nextLocation;

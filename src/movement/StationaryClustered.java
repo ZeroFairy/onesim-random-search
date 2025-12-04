@@ -3,7 +3,8 @@ package movement;
 import core.Coord;
 import core.Settings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generated clustered spawns using Thomas Cluster Point Process Model.
@@ -49,7 +50,8 @@ public class StationaryClustered extends StationaryNodes {
 			int[] clusterRange = s.getCsvInts(CLUSTERPOI_NS); // Group2.cluster = 10, 10
 			nrofCluster = Math.min(
 				clusterRange[1],
-				(int) Math.ceil(rng.nextDouble(clusterRange[0], clusterRange[1] + 1)));
+				(int) Math.ceil(rng.nextDouble(clusterRange[0], clusterRange[1] + 1))
+			);
 		} else nrofCluster = 3;
 
 		this.alpha = s.contains(ALPHA_NS) ? s.getDouble(ALPHA_NS) : DEFAULT_ALPHA;
