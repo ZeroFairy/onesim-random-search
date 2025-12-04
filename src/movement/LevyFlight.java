@@ -16,8 +16,8 @@ public class LevyFlight extends MovementModel {
 	private Coord lastWaypoint;
 
 	/** Controls how heavy the distribution tail is */
-	public static final String ALPHA = "alpha";
-	public static final double DEFAULT_ALPHA = 0.5;
+	public static final String ALPHA = "levyAlpha";
+	public static final double DEFAULT_ALPHA = 1.5;
 
 	public static final String XM = "xm";
 	public static final double DEFAULT_XM = 1;
