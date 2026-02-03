@@ -1,0 +1,60 @@
+.\compile.bat
+
+.\one.bat -b 1 .\settings\demos\randomsearch-bm.cfg
+.\one.bat -b 1 .\settings\demos\randomsearch-rw.cfg
+.\one.bat -b 1 -d Group.alpha=0.25 .\settings\demos\randomsearch-lf.cfg
+.\one.bat -b 1 -d Group.alpha=0.50 .\settings\demos\randomsearch-lf.cfg
+.\one.bat -b 1 -d Group.alpha=0.75 .\settings\demos\randomsearch-lf.cfg
+.\one.bat -b 1 -d Group.alpha=1.00 .\settings\demos\randomsearch-lf.cfg
+.\one.bat -b 1 -d Group.alpha=1.25 .\settings\demos\randomsearch-lf.cfg
+.\one.bat -b 1 -d Group.alpha=1.50 .\settings\demos\randomsearch-lf.cfg
+.\one.bat -b 1 -d Group.alpha=1.75 .\settings\demos\randomsearch-lf.cfg
+.\one.bat -b 1 -d Group.alpha=2.00 .\settings\demos\randomsearch-lf.cfg
+
+------
+
+.\compile.bat
+
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/1 .\settings\demos\randomsearch-bm.cfg
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/1 .\settings\demos\randomsearch-rw.cfg
+.\one.bat -b 8 -d Report.reportDir=reports/randomsearch/run/1 .\settings\demos\randomsearch-lf.cfg
+
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/2 .\settings\demos\randomsearch-bm.cfg
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/2 .\settings\demos\randomsearch-rw.cfg
+.\one.bat -b 8 -d Report.reportDir=reports/randomsearch/run/2 .\settings\demos\randomsearch-lf.cfg
+
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/3 .\settings\demos\randomsearch-bm.cfg
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/3 .\settings\demos\randomsearch-rw.cfg
+.\one.bat -b 8 -d Report.reportDir=reports/randomsearch/run/3 .\settings\demos\randomsearch-lf.cfg
+
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/4 .\settings\demos\randomsearch-bm.cfg
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/4 .\settings\demos\randomsearch-rw.cfg
+.\one.bat -b 8 -d Report.reportDir=reports/randomsearch/run/4 .\settings\demos\randomsearch-lf.cfg
+
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/5 .\settings\demos\randomsearch-bm.cfg
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/5 .\settings\demos\randomsearch-rw.cfg
+.\one.bat -b 8 -d Report.reportDir=reports/randomsearch/run/5 .\settings\demos\randomsearch-lf.cfg
+
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/6 .\settings\demos\randomsearch-bm.cfg
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/6 .\settings\demos\randomsearch-rw.cfg
+.\one.bat -b 8 -d Report.reportDir=reports/randomsearch/run/6 .\settings\demos\randomsearch-lf.cfg
+
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/7 .\settings\demos\randomsearch-bm.cfg
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/7 .\settings\demos\randomsearch-rw.cfg
+.\one.bat -b 8 -d Report.reportDir=reports/randomsearch/run/7 .\settings\demos\randomsearch-lf.cfg
+
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/8 .\settings\demos\randomsearch-bm.cfg
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/8 .\settings\demos\randomsearch-rw.cfg
+.\one.bat -b 8 -d Report.reportDir=reports/randomsearch/run/8 .\settings\demos\randomsearch-lf.cfg
+
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/9 .\settings\demos\randomsearch-bm.cfg
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/9 .\settings\demos\randomsearch-rw.cfg
+.\one.bat -b 8 -d Report.reportDir=reports/randomsearch/run/9 .\settings\demos\randomsearch-lf.cfg
+
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/10 .\settings\demos\randomsearch-bm.cfg
+.\one.bat -b 1 -d Report.reportDir=reports/randomsearch/run/10 .\settings\demos\randomsearch-rw.cfg
+.\one.bat -b 8 -d Report.reportDir=reports/randomsearch/run/10 .\settings\demos\randomsearch-lf.cfg
+
+
+
+
