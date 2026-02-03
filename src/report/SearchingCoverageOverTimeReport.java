@@ -37,7 +37,7 @@ public class SearchingCoverageOverTimeReport extends Report implements UpdateLis
 		/* Helper representative node */
 		this.representative = searchingAgents.getFirst();
 
-		assert this.representative != null : "No searching agents found in the scenario.";
+		assert this.representative != null : "No searching agents found in the scenario.\n";
 
 		/* Target identifiers of searchable nodes */
 		final String targetPrefix;
@@ -53,7 +53,7 @@ public class SearchingCoverageOverTimeReport extends Report implements UpdateLis
 
 		/* Check if we have any searchable nodes */
 		if (searchableNodes.isEmpty()) {
-			System.err.print("No searchable nodes found in the scenario.");
+			System.err.print("No searchable nodes found in the scenario.\n");
 			return;
 		}
 
