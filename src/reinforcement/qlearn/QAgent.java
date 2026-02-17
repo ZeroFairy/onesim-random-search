@@ -10,103 +10,108 @@ import reinforcement.utils.IndexValue;
 /**
  * Created by xschen on 9/27/2015 0027.
  */
-public class QAgent implements Serializable{
-    private QLearner learner;
-    private int currentState;
-    private int prevState;
+public class QAgent implements Serializable {
 
-    /** action taken at prevState */
-    private int prevAction;
+	private QLearner learner;
 
-    public int getCurrentState(){
-        return currentState;
-    }
+	private int currentState;
 
-    public int getPrevState(){
-        return prevState;
-    }
+	private int prevState;
 
-    public int getPrevAction(){
-        return prevAction;
-    }
+	/**
+	 * action taken at prevState
+	 */
+	private int prevAction;
 
-    public void start(int currentState){
-        this.currentState = currentState;
-        this.prevAction = -1;
-        this.prevState = -1;
-    }
+	public int getCurrentState() {
+		return currentState;
+	}
 
-    public IndexValue selectAction(){
-        return learner.selectAction(currentState);
-    }
+	public int getPrevState() {
+		return prevState;
+	}
 
-    public IndexValue selectAction(Set<Integer> actionsAtState){
-        return learner.selectAction(currentState, actionsAtState);
-    }
+	public int getPrevAction() {
+		return prevAction;
+	}
 
-    public void update(int actionTaken, int newState, double immediateReward){
-        update(actionTaken, newState, null, immediateReward);
-    }
+	public void start(int currentState) {
+		this.currentState = currentState;
+		this.prevAction = -1;
+		this.prevState = -1;
+	}
 
-    public void update(int actionTaken, int newState, Set<Integer> actionsAtNewState, double immediateReward){
+	public IndexValue selectAction() {
+		return learner.selectAction(currentState);
+	}
 
-        learner.update(currentState, actionTaken, newState, actionsAtNewState, immediateReward);
+	public IndexValue selectAction(Set<Integer> actionsAtState) {
+		return learner.selectAction(currentState, actionsAtState);
+	}
 
-        prevState = currentState;
-        prevAction = actionTaken;
+	public void update(int actionTaken, int newState, double immediateReward) {
+		update(actionTaken, newState, null, immediateReward);
+	}
 
-        currentState = newState;
-    }
+	public void update(int actionTaken, int newState, Set<Integer> actionsAtNewState, double immediateReward) {
 
-    public void enableEligibilityTrace(double lambda){
-        QLambdaLearner acll = new QLambdaLearner(learner);
-        acll.setLambda(lambda);
-        learner = acll;
-    }
+		learner.update(currentState, actionTaken, newState, actionsAtNewState, immediateReward);
 
-    public QLearner getLearner(){
-        return learner;
-    }
+		prevState = currentState;
+		prevAction = actionTaken;
 
-    public void setLearner(QLearner learner){
-        this.learner = learner;
-    }
+		currentState = newState;
+	}
 
-    public QAgent(int stateCount, int actionCount, double alpha, double gamma, double initialQ){
-        learner = new QLearner(stateCount, actionCount, alpha, gamma, initialQ);
-    }
+	public void enableEligibilityTrace(double lambda) {
+		QLambdaLearner acll = new QLambdaLearner(learner);
+		acll.setLambda(lambda);
+		learner = acll;
+	}
 
-    public QAgent(QLearner learner){
-        this.learner = learner;
-    }
+	public QLearner getLearner() {
+		return learner;
+	}
 
-    public QAgent(int stateCount, int actionCount){
-        learner = new QLearner(stateCount, actionCount);
-    }
+	public void setLearner(QLearner learner) {
+		this.learner = learner;
+	}
 
-    public QAgent(){
+	public QAgent(int stateCount, int actionCount, double alpha, double gamma, double initialQ) {
+		learner = new QLearner(stateCount, actionCount, alpha, gamma, initialQ);
+	}
 
-    }
+	public QAgent(QLearner learner) {
+		this.learner = learner;
+	}
 
-    public QAgent makeCopy(){
-        QAgent clone = new QAgent();
-        clone.copy(this);
-        return clone;
-    }
+	public QAgent(int stateCount, int actionCount) {
+		learner = new QLearner(stateCount, actionCount);
+	}
 
-    public void copy(QAgent rhs){
-        learner.copy(rhs.learner);
-        prevAction = rhs.prevAction;
-        prevState = rhs.prevState;
-        currentState = rhs.currentState;
-    }
+	public QAgent() {
 
-    @Override
-    public boolean equals(Object obj){
-        if(obj != null && obj instanceof QAgent){
-            QAgent rhs = (QAgent)obj;
-            return prevAction == rhs.prevAction && prevState == rhs.prevState && currentState == rhs.currentState && learner.equals(rhs.learner);
-        }
-        return false;
-    }
+	}
+
+	public QAgent makeCopy() {
+		QAgent clone = new QAgent();
+		clone.copy(this);
+		return clone;
+	}
+
+	public void copy(QAgent rhs) {
+		learner.copy(rhs.learner);
+		prevAction = rhs.prevAction;
+		prevState = rhs.prevState;
+		currentState = rhs.currentState;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj != null && obj instanceof QAgent) {
+			QAgent rhs = (QAgent) obj;
+			return prevAction == rhs.prevAction && prevState == rhs.prevState && currentState == rhs.currentState && learner.equals(rhs.learner);
+		}
+		return false;
+	}
 }

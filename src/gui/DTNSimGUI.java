@@ -57,6 +57,7 @@ public class DTNSimGUI extends DTNSimUI {
 	 * Initializes the GUI
 	 */
 	private void initGUI() {
+		System.out.println("Initializing custom GUI...");
 		Settings guiSettings = new Settings("GUI");
 		boolean processTrails = guiSettings.getBoolean("processNodeTrails", true);
 		boolean trailsEnabled = guiSettings.getBoolean("nodeTrailEnabled", false);

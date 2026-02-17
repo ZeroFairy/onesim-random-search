@@ -59,7 +59,7 @@ public class NodeGraphic extends PlayFieldGraphic {
 	 * This variable is used to determine if the trails should be processed (not only drawn).
 	 */
 	private static Boolean processTrails = false;
-	private static Color defaultTrailColor = Color.GRAY;
+	private static Color defaultTrailColor = null;
 	private static int trailMaxLength = 50;
 	private static boolean isTrailEnabled = true;
 	private static boolean isTrailFadeEnabled = true;
@@ -75,15 +75,18 @@ public class NodeGraphic extends PlayFieldGraphic {
 	private final DTNHost node;
 
 	public NodeGraphic(DTNHost node) {
+		System.out.println("running NodeGraphic constructor");
 		this.node = node;
 		this.instanceId = instanceCounter++;
 
 //		System.out.println("Creating NodeGraphic instance " + instanceId + " for node " + node);
 
 		if (processTrails) {
+			System.out.println("Using random trail color for node " + node);
 			this.positionHistory = new LinkedList<>();
-			this.trailColor = generateRandomColor();
+			this.trailColor = defaultTrailColor == null ? generateRandomColor() : defaultTrailColor;
 		} else {
+			System.out.println("Not processing trails for node " + node);
 			this.positionHistory = null;
 			this.trailColor = defaultTrailColor;
 		}
@@ -207,13 +210,17 @@ public class NodeGraphic extends PlayFieldGraphic {
 	}
 
 	public static void initializeTrailConfiguration(boolean enableTrails, int maxLength, Color defaultColor, boolean fade) {
+		System.out.println("running initializeTrailConfiguration");
+
 		if (isTrailConfigured) {
 			throw new IllegalStateException("Trail configuration can only be set once.");
 		}
 		isTrailEnabled = enableTrails;
 		trailMaxLength = maxLength;
+		System.out.println("DEFAULT COLOR: " + defaultColor);
 		if (defaultColor != null) {
 			defaultTrailColor = defaultColor;
+			System.out.println("set default color to: " + defaultTrailColor);
 		}
 		isTrailFadeEnabled = fade;
 		isTrailConfigured = true;
@@ -262,6 +269,7 @@ public class NodeGraphic extends PlayFieldGraphic {
 				} else {
 					segmentColor = this.trailColor;
 				}
+//				System.out.println("Drawing color: " + this.trailColor);
 
 				g2.setColor(segmentColor);
 				g2.drawLine(
